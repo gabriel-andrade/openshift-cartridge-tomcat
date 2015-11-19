@@ -69,10 +69,10 @@ function start_app() {
         PROCESS_ID=$!
 
         echo $PROCESS_ID > $TOMCAT_PID_FILE
-        if ! ishttpup; then
-            echo "Timed out waiting for http listening port"
-            exit 1
-        fi
+        #if ! ishttpup; then
+        #    echo "Timed out waiting for http listening port"
+        #    exit 1
+        #fi
     fi
 }
 
