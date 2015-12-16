@@ -4,9 +4,6 @@ set -e
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 source ${OPENSHIFT_TOMCAT_DIR}/bin/util
 
-export OPENSHIFT_MEMCACHED_HOST="memcachedcluster-societao.rhcloud.com"
-export OPENSHIFT_MEMCACHED_PORT=53352
-
 if ! [ $# -eq 1 ]
 then
     echo "Usage: \$0 [start|restart|graceful|graceful-stop|stop|threaddump]"
@@ -63,8 +60,20 @@ function start_app() {
         echo "The tomcat cartridge is already running" 1>&2
     else
         echo "Starting tomcat cartridge"
-        echo $OPENSHIFT_MEMCACHED_HOST
-        echo $OPENSHIFT_MEMCACHED_PORT
+
+
+        envf="$OPENSHIFT_REPO_DIR/configuration/tomcat.env"
+        #  Source environment if it exists.
+        [ -f "$envf" ]  &&  source "$envf"
+        #Determine variables to connect with Memcached server  
+        if [ "$memcached_host" ]; then 
+            export OPENSHIFT_MEMCACHED_HOST=$memcached_host
+        fi
+        if [ "$memcached_port" ]; then
+            declare -i mem_port=$memcached_port
+            export OPENSHIFT_MEMCACHED_PORT=$mem_port
+        fi
+
         # Start
         export CATALINA_HOME=$OPENSHIFT_TOMCAT_DIR
         export CATALINA_BASE=$OPENSHIFT_TOMCAT_DIR
